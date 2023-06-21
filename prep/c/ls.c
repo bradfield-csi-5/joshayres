@@ -15,22 +15,28 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-typedef enum
+enum flags
 {
     NONE = 0,
     ALL = 1,
     LONG = 2,
     SIZE = 4,
     LIST = 8,
-}flags;
+};
 
-int list(const char* path, flags flag)
+int list(const char* path, enum flags flag)
 {
     DIR *dir = opendir(path);
 
     struct dirent *info = readdir(dir);
     while(info != NULL)
     {
+        if(!flag&ALL) {
+            if(info->d_name[0] == '.') {
+                info = readdir(dir);
+                continue;
+            }
+        }
         struct stat stat_buf;
         stat(info->d_name, &stat_buf);
         unsigned char *type;
@@ -69,19 +75,21 @@ int list(const char* path, flags flag)
 
 int main(int argc, char **argv)
 {
+    enum flags flag = NONE;
+    char *file = ".";
     for(int i = 1; i < argc; i++)
     {
         if(argv[i][0] == '-')
         {
-            // TODO: flag
+            if(argv[i][1] == 'a') {
+                flag += ALL;
+            }
             continue;
+        } else {
+            strcpy(file, argv[i]);
         }
-        list(argv[i], NONE);
     }
-    if(argc == 1)
-    {
-        list(".", NONE);
-    }
+    list(file, flag);
 
     return 0;
 }
