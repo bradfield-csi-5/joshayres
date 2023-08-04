@@ -1,7 +1,5 @@
 package vm
 
-import "fmt"
-
 const (
 	Load  = 0x01
 	Store = 0x02
@@ -34,7 +32,6 @@ func Compute(memory []byte) {
 	for {
 
 		op := memory[registers[0]]
-		fmt.Println(op, registers)
 
 		// // decode and execute
 		switch op {
