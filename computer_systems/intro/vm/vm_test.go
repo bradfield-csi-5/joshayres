@@ -1,7 +1,6 @@
 package vm_test
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -146,7 +145,6 @@ func testCompute(t *testing.T, test vmTest) {
 	// assemble code and load into memory
 	memory := make([]byte, 256)
 	copy(memory[8:], assemble(test.asm))
-	fmt.Println(assemble(test.asm))
 	// for each case, set inputs and run vm
 	for _, c := range test.cases {
 		memory[1] = c.x

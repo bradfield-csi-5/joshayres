@@ -1,5 +1,7 @@
 package vm
 
+import "fmt"
+
 const (
 	Load  = 0x01
 	Store = 0x02
@@ -29,9 +31,10 @@ func Compute(memory []byte) {
 	registers := [3]byte{8, 0, 0} // PC, R1 and R2
 
 	// Keep looping, like a physical computer's clock
-	for i := 0; i < 100; i++ {
+	for {
 
 		op := memory[registers[0]]
+		fmt.Println(op, registers)
 
 		// // decode and execute
 		switch op {
@@ -52,13 +55,34 @@ func Compute(memory []byte) {
 			loc1 := memory[registers[0]]
 			registers[0] += 1
 			loc2 := memory[registers[0]]
-			registers[loc1] = memory[loc1] + memory[loc2]
+			registers[loc1] = registers[loc1] + registers[loc2]
 		case Sub:
 			registers[0] += 1
 			loc1 := memory[registers[0]]
 			registers[0] += 1
 			loc2 := memory[registers[0]]
-			registers[loc1] = memory[loc1] - memory[loc2]
+			registers[loc1] = registers[loc1] - registers[loc2]
+		case Jump:
+			registers[0] += 1
+			registers[0] = memory[registers[0]] - 1
+		case Beqz:
+			registers[0] += 1
+			loc := memory[registers[0]]
+			registers[0] += 1
+			offset := memory[registers[0]]
+			if registers[loc] == 0 {
+				registers[0] += offset
+			}
+		case Addi:
+			registers[0] += 1
+			reg := memory[registers[0]]
+			registers[0] += 1
+			registers[reg] += memory[registers[0]]
+		case Subi:
+			registers[0] += 1
+			reg := memory[registers[0]]
+			registers[0] += 1
+			registers[reg] -= memory[registers[0]]
 		case Halt:
 			return
 		}
